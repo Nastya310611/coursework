@@ -34,7 +34,7 @@ def get_card_info(transactions: list[dict]):
                 continue
 
             if amount_float < 0:
-                last_digits = f'**{card_number[-4:]}'
+                last_digits = card_number[-4:]
                 card_exists = False
                 for card in cards_data:
                     if card['last_digits'] == last_digits:
