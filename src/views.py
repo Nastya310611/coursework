@@ -66,9 +66,14 @@ def get_top_transactions(transactions: list[dict]) -> list[dict]:
             continue
 
         if amount_float < 0:
+            raw_date = trans.get('Дата операции', '')
+            if raw_date and len(str(raw_date)) >= 10:
+                formated_date = str(raw_date)[:10]
+            else:
+                formated_date = str(raw_date)
             valid_transactions.append({
-                'date': trans.get('Дата операции', ''),
-                'amount': abs(amount_float),
+                'date': formated_date,
+                'amount': round(abs(amount_float), 2),
                 'category': trans.get('Категория', ''),
                 'description': trans.get('Описание', '')
             })
@@ -81,17 +86,22 @@ def get_currency_rates(currencies: list = None) -> list[dict]:
     if currencies is None:
         currencies = ['USD', 'EUR']
     url = 'https://api.exchangerate-api.com/v4/latest/RUB'
+    rates = []
+
     try:
         response = requests.get(url, timeout=5)
         response.raise_for_status()
         data = response.json()
 
-        rates = []
-
+        if 'rates' not in data:
+            raise ValueError('В ответе API НЕТ КЛЮЧА "RATES"')
         for curr in currencies:
             if curr in data['rates']:
                 rate = round(1 / data['rates'][curr], 2)
-                rates.append({'currency': curr, 'rate': rate})
+                if isinstance(rate, (int, float)) and rate > 0:
+                    rates.append({'currency': curr, 'rate': rate})
+            else:
+                raise ValueError(f'Валюта {curr} отсутствует в ответе API')
         return rates
 
     except requests.RequestException as e:
