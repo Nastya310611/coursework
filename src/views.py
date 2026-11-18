@@ -9,11 +9,11 @@ import yfinance as yf
 def greeting(date_string: str) -> str:
     """Функция возвращает приветствие в зависимости от времени суток"""
     now_time = datetime.now().hour
-    if 5 <= now_time < 11:
+    if 6 <= now_time < 12:
         return 'Доброе утро'
-    elif 11 <= now_time < 17:
+    elif 12 <= now_time < 18:
         return 'Добрый день'
-    elif 17 <= now_time < 22:
+    elif 18 <= now_time < 23:
         return 'Добрый вечер'
     else:
         return 'Доброй ночи'
